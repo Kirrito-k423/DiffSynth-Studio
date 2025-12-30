@@ -56,3 +56,29 @@ video = pipe(
 )
 save_video(video, "video.mp4", fps=15, quality=5)
 ```
+
+
+### 训练
+当前已为每类模型添加NPU的启动脚本样例，脚本存放在`examples/xxx/special/npu_scripts`目录下，例如 `examples/wanvideo/model_training/special/npu_scripts/Wan2.2-T2V-A14B-NPU.sh`。
+
+在NPU训练脚本中，添加了可以优化性能的NPU特有环境变量，并针对特定模型开启了相关参数。
+
+#### 环境变量
+```shell
+export PYTORCH_NPU_ALLOC_CONF=expandable_segments:True
+```
+`expandable_segments:<value>`: 使能内存池扩展段功能，即虚拟内存特征。
+
+```shell
+export CPU_AFFINITY_CONF=1
+```
+设置0或未设置: 表示不启用绑核功能
+
+1: 表示开启粗粒度绑核
+
+2: 表示开启细粒度绑核
+
+#### 特定模型需要开启的参数
+| 模型        | 参数 | 备注                |
+|-----------|------|-------------------|
+| Wan 14B系列 | --initialize_model_on_cpu | 14B模型需要在cpu上进行初始化 |
